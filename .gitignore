@@ -1,0 +1,28 @@
+# 编译产物（带斜杠只匹配根目录，避免误伤 cmd/ 之类的源码目录）
+/panhub
+/panhub.exe
+/panhub-*
+*.exe~
+*.bak
+
+# 运行时数据
+data/
+*.smoke.yaml
+config.yaml
+config.smoke.yaml
+.smoke/
+.davtest/
+dev-test/
+.uicheck/
+
+# 前端
+web/node_modules/
+internal/webui/dist/assets/
+internal/webui/dist/index.html
+
+# 日志与临时文件
+*.log
+tools/
+.ref/
+.ref2/
+.ref3/

@@ -1,0 +1,64 @@
+# panhub 配置示例：复制为 config.yaml 后按需修改。
+# 所有 server.* 都可以用环境变量覆盖（Docker 里更方便）：
+#   PANHUB_ADDR / PANHUB_PASSWORD / PANHUB_DATA_DIR / PANHUB_BASE_URL
+
+server:
+  # 监听地址。只想本机访问改成 127.0.0.1:5211
+  addr: ":5211"
+  # 后台登录密码（Web UI 和 WebDAV 共用），务必改掉
+  admin_password: "admin"
+  # 数据目录：state.json（挂载点/任务/播放密钥）放这里
+  data_dir: "./data"
+  # STRM 里写的地址。留空会自动猜本机局域网 IP；
+  # 如果 NAS 有多网卡或走反代，建议显式写死，例如 http://192.168.1.10:5211
+  public_base_url: ""
+
+# 首次启动时会把这里的挂载点写入 data/state.json。
+# 之后在 Web UI 里改的挂载点以 state.json 为准，这里再改不会覆盖。
+mounts:
+  # 本地目录：适合把 NAS 上已有影片目录直接挂进来
+  - name: local
+    type: local
+    read_only: false
+    config:
+      root: "./media"
+
+  # 另一个 WebDAV 服务（例如 Alist / Nextcloud / 坚果云）
+  - name: alist
+    type: webdav
+    read_only: true
+    config:
+      url: "http://192.168.1.10:5244/dav"
+      username: "admin"
+      password: "your-password"
+
+  # 天翼云盘（实验性，需要浏览器 Cookie）
+  # - name: tianyi
+  #   type: cloud189
+  #   read_only: true
+  #   config:
+  #     cookie: "COOKIE_LOGIN_USER=...; ..."
+  #     root_id: "-11"
+
+  # 中国移动云盘（用「登录」按钮换授权后，authorization 会自动填好）
+  # - name: yidong
+  #   type: cloud139
+  #   read_only: true
+  #   config:
+  #     authorization: "cGM6MTM4MDAwMDAwMDA6..."   # 即 Basic 后面那串
+  #     account: "13800000000"
+  #     root_id: "root"
+
+# 定时任务（也可以在 Web UI 里增删）
+tasks:
+  - name: 电影 STRM
+    type: strm
+    mount: alist
+    dir: "/movies"
+    # 容器里就是 /app/strm/movies，注意挂载出来给 Emby 读
+    target: "./strm/movies"
+    # proxy = 走本服务代理（兼容性最好）；link = 网盘直链（省流量）
+    mode: proxy
+    # 支持 30m / 6h / 1d；manual 表示只在 UI 里手动点
+    interval: "6h"
+    enabled: true

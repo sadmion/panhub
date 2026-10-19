@@ -1,0 +1,29 @@
+services:
+  panhub:
+    # 本地构建：docker compose up -d --build
+    build: .
+    # 本地构建后的镜像名
+    image: panhub:latest
+    # 如果用了 GHCR / Docker Hub，把上面 image 换成真实地址，例如：
+    #   ghcr.io/<你的GitHub用户名>/panhub:latest
+    #   <你的DockerHub用户名>/panhub:latest
+    # 并把 build: . 注释掉，加上 pull_policy: always
+    container_name: panhub
+    restart: unless-stopped
+    ports:
+      - "5211:5211"
+    environment:
+      - TZ=Asia/Shanghai
+      # 建议在这里改密码，而不是改 config.yaml
+      - PANHUB_PASSWORD=admin
+      # 容器不知道自己对外是哪个地址，生成 STRM 时用这个
+      # - PANHUB_BASE_URL=http://192.168.1.10:5211
+    volumes:
+      # 挂载点/任务/播放密钥
+      - ./data:/app/data
+      # STRM 输出目录：Emby / Jellyfin 要能读到同一份
+      - ./strm:/app/strm
+      # 本地目录驱动用的媒体目录（只读即可）
+      - ./media:/media:ro
+      # 配置文件（可选；不挂就用镜像内默认值）
+      # - ./config.yaml:/app/config.yaml:ro

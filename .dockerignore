@@ -1,0 +1,32 @@
+# 构建上下文里不需要的东西（能显著加快 docker build）
+.git
+.github
+.gitignore
+**/.DS_Store
+
+# 编译产物
+panhub
+panhub.exe
+
+# 运行时数据与日志
+data/
+logs/
+strm/
+*.log
+config.yaml
+config.smoke.yaml
+.smoke/
+.davtest/
+.uicheck/
+.ref/
+.ref2/
+.ref3/
+.media/
+
+# 前端依赖与构建产物（镜像里会重新装、重新构建）
+web/node_modules/
+web/dist/
+internal/webui/dist/
+
+# 本地工具链（Go/缓存别塞进镜像）
+tools/
